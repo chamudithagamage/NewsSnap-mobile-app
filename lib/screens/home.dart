@@ -28,6 +28,7 @@ class _HomeState extends State<Home> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
             SizedBox(
+
               width: 70, // Set a reasonable width for the image
               height: 70,
               child: Image.asset(
@@ -82,7 +83,7 @@ class CategoryCard extends StatelessWidget {
         //for later
       },
         child: Container(
-          margin: EdgeInsets.only(right: 15),
+          margin: EdgeInsets.only(right: 7),
           decoration: BoxDecoration(
             color: Colors.grey[300],
             borderRadius: BorderRadius.circular(15),
@@ -104,6 +105,24 @@ class CategoryCard extends StatelessWidget {
           ),
         ),
     );
-
   }
 }
+
+class newsCard extends StatelessWidget {
+  final String imageUrl, title, desc;
+  const newsCard({super.key,required this.imageUrl,required this.title,required this.desc});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: Column(
+        children: <Widget>[
+          Image.network(imageUrl),
+          Text(title),
+          Text(desc),
+        ],
+      ),
+    );
+  }
+}
+
