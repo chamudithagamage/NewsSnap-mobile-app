@@ -1,0 +1,3 @@
+class CategoryDetails{
+   String categoryName = '';
+}
