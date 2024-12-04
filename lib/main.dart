@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:news_app/screens/home.dart';
 
 void main() {
-  runApp( MyApp());
+  runApp( const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -12,9 +12,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData(
-        appBarTheme: AppBarTheme(
+        appBarTheme: const AppBarTheme(
           titleTextStyle: TextStyle(
-            fontFamily: 'Cormorant',
+            fontFamily: 'DMSerif',
             fontSize: 25.0,
             fontWeight: FontWeight.bold,
             color: Colors.black54,
@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
         ),
       ),
       debugShowCheckedModeBanner: false,
-      home: Home(),
+      home: const Home(),
     );
   }
 }

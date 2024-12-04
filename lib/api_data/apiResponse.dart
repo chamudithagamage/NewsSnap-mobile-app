@@ -8,9 +8,9 @@ class ApiResponse {
 
 
   Future<void> getNews() async{
-    String apiUrl = "https://newsapi.org/v2/top-headlines?country=us&category=business&apiKey=7b18baf4d7174a108438c839b3ef336a";
+    var apiUrl = Uri.parse('https://newsapi.org/v2/top-headlines?country=us&category=business&apiKey=7b18baf4d7174a108438c839b3ef336a');
 
-    var response = await http.get(apiUrl as Uri);
+    var response = await http.get(apiUrl);
 
     //jsonData
     var responseJson = jsonDecode(response.body);
@@ -27,8 +27,9 @@ class ApiResponse {
               articleUrl: element['url'],
               urlToImg: element['urlToImage'],
               content: element['content'],
-              dateTime: element['publishedAt'],
+              //dateTime: element['publishedAt'],
           );
+          news.add(articles);
         }
 
       });

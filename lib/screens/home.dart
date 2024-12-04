@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:news_app/api_data/data.dart';
 import 'package:news_app/models/categoryDetails.dart';
 
+import '../api_data/apiResponse.dart';
+import '../models/articles.dart';
+
 class Home extends StatefulWidget {
   const Home({super.key});
 
@@ -12,12 +15,29 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
 
-  List<CategoryDetails> category = List.generate(0, (index) => CategoryDetails());
+  List<CategoryDetails> category = List.generate(7, (index) => CategoryDetails());
+  List<Articles> articles = List.generate(7, (index) => Articles());
+  bool isLoading = true;
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     category = getCategoryDetails();
+    getApiResponse();
+  }
+
+  //method to get api responses
+  getApiResponse() async{
+    ApiResponse apiResponse = ApiResponse();
+    await apiResponse.getNews();
+    debugPrint('up to here works');
+    articles = apiResponse.news;
+
+    //to check whether the response has received
+    setState(() {
+      isLoading = false;
+    });
   }
 
   @override
@@ -28,17 +48,15 @@ class _HomeState extends State<Home> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
             SizedBox(
-
-              width: 70, // Set a reasonable width for the image
+              width: 70,
               height: 70,
               child: Image.asset(
                 'assets/images/playstore.png',
                 fit: BoxFit.fill,
               ),
             ),
-             Text("News"),
-             Text(
-              "Snap",
+             const Text(
+              "News|snap",
                 style: TextStyle(
                 color: Colors.teal,
               ),
@@ -46,12 +64,17 @@ class _HomeState extends State<Home> {
           ],
         ),
       ),
-      body: Container(
+      body: isLoading ? const Center(
+        child: CircularProgressIndicator(),
+      ) : SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 10),
+
         child: Column(
           children: <Widget>[
+            //category ribbon
             Container(
-              padding: EdgeInsets.symmetric(horizontal: 10),
-              height: 40.0,
+              padding: const EdgeInsets.symmetric(vertical: 10),
+              height: 60.0,
               child: ListView.builder(
                 itemCount: category.length,
                   shrinkWrap: true,
@@ -62,6 +85,21 @@ class _HomeState extends State<Home> {
                    );
                   }
               ),
+            ),
+
+            //news articles
+            ListView.builder(
+              padding: EdgeInsets.only(top: 5),
+              itemCount: articles.length,
+                shrinkWrap: true,
+                  scrollDirection: Axis.vertical,
+                  itemBuilder: (context,index){
+                  return newsCard(
+                    imageUrl: articles[index].urlToImg,
+                    title: articles[index].title,
+                    desc: articles[index].description,
+                  );
+                }
             )
           ],
         ),
@@ -83,7 +121,7 @@ class CategoryCard extends StatelessWidget {
         //for later
       },
         child: Container(
-          margin: EdgeInsets.only(right: 7),
+          margin: const EdgeInsets.only(right: 7),
           decoration: BoxDecoration(
             color: Colors.grey[300],
             borderRadius: BorderRadius.circular(15),
@@ -92,11 +130,10 @@ class CategoryCard extends StatelessWidget {
             children: <Widget>[
               Container(
                 alignment: Alignment.center,
-                padding: EdgeInsets.all(8),
-
-                 child: Text(
+                padding: const EdgeInsets.all(8),
+                child: Text(
                    categoryName,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 15.0
                     ),
                  ),
@@ -109,17 +146,28 @@ class CategoryCard extends StatelessWidget {
 }
 
 class newsCard extends StatelessWidget {
-  final String imageUrl, title, desc;
-  const newsCard({super.key,required this.imageUrl,required this.title,required this.desc});
+  final String? imageUrl, title, desc;
+  const newsCard({super.key, required this.imageUrl,required this.title,required this.desc});
 
   @override
   Widget build(BuildContext context) {
     return Container(
+      padding: EdgeInsets.only(bottom: 15),
+      // decoration: BoxDecoration(
+      //   color: Colors.grey[300],
+      //   borderRadius: BorderRadius.circular(15),
+      // ),
       child: Column(
         children: <Widget>[
-          Image.network(imageUrl),
-          Text(title),
-          Text(desc),
+          Image.network(imageUrl!),
+          Text(title!,
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              height: 1
+            ),
+          ),
+          Text(desc!),
         ],
       ),
     );
