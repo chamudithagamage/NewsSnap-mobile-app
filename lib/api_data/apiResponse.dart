@@ -1,5 +1,5 @@
 import 'dart:convert';
-
+import '../api_key.dart';
 import '../models/articles.dart';
 import 'package:http/http.dart' as http;
 
@@ -8,7 +8,8 @@ class ApiResponse {
 
 
   Future<void> getNews() async{
-    String apiUrl = 'https://newsapi.org/v2/top-headlines?country=us&category=general&apiKey=7b18baf4d7174a108438c839b3ef336a';
+    final apiKey = ApiKey.apiKey;
+    String apiUrl = 'https://newsapi.org/v2/top-headlines?country=us&category=general&apiKey=$apiKey';
 
     var response = await http.get(Uri.parse(apiUrl));
 

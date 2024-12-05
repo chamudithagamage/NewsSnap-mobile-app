@@ -1,11 +1,13 @@
-class  extends StatefulWidget {
-  const ({super.key});
+import 'package:flutter/cupertino.dart';
+
+class CategoryArticles extends StatefulWidget {
+  const CategoryArticles({super.key});
 
   @override
-  State<> createState() => _State();
+  State<CategoryArticles> createState() => _CategoryArticlesState();
 }
 
-class _State extends State<> {
+class _CategoryArticlesState extends State<CategoryArticles> {
   @override
   Widget build(BuildContext context) {
     return const Placeholder();
