@@ -6,9 +6,6 @@ List<CategoryDetails> getCategoryDetails(){
   CategoryDetails categoryDetails = CategoryDetails();
 
   //giving news categories
-  categoryDetails.categoryName = "Politics";
-  category.add(categoryDetails);
-
   categoryDetails = CategoryDetails();
   categoryDetails.categoryName = "Business";
   category.add(categoryDetails);
@@ -18,19 +15,19 @@ List<CategoryDetails> getCategoryDetails(){
   category.add(categoryDetails);
 
   categoryDetails = CategoryDetails();
-  categoryDetails.categoryName = "Sports";
-  category.add(categoryDetails);
-
-  categoryDetails = CategoryDetails();
-  categoryDetails.categoryName = "Weather";
-  category.add(categoryDetails);
-
-  categoryDetails = CategoryDetails();
   categoryDetails.categoryName = "Health";
   category.add(categoryDetails);
 
   categoryDetails = CategoryDetails();
   categoryDetails.categoryName = "Science";
+  category.add(categoryDetails);
+
+  categoryDetails = CategoryDetails();
+  categoryDetails.categoryName = "Sports";
+  category.add(categoryDetails);
+
+  categoryDetails = CategoryDetails();
+  categoryDetails.categoryName = "Technology";
   category.add(categoryDetails);
 
   return category;

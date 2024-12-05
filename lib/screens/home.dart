@@ -1,7 +1,8 @@
-
 import 'package:flutter/material.dart';
 import 'package:news_app/api_data/data.dart';
 import 'package:news_app/models/categoryDetails.dart';
+import 'package:news_app/screens/article_view.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 import '../api_data/apiResponse.dart';
 import '../models/articles.dart';
@@ -16,7 +17,7 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
 
   List<CategoryDetails> category = List.generate(7, (index) => CategoryDetails());
-  List<Articles> articles = List.generate(7, (index) => Articles());
+  List<Articles> articles = List.generate(0, (index) => Articles());
   bool isLoading = true;
 
   @override
@@ -44,6 +45,7 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.white,
         title: Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
@@ -52,7 +54,7 @@ class _HomeState extends State<Home> {
               height: 70,
               child: Image.asset(
                 'assets/images/playstore.png',
-                fit: BoxFit.fill,
+                fit: BoxFit.contain,
               ),
             ),
              const Text(
@@ -71,8 +73,10 @@ class _HomeState extends State<Home> {
 
         child: Column(
           children: <Widget>[
-            //category ribbon
+
+            //category ribbon on the top
             Container(
+              color: Colors.white,
               padding: const EdgeInsets.symmetric(vertical: 10),
               height: 60.0,
               child: ListView.builder(
@@ -88,19 +92,26 @@ class _HomeState extends State<Home> {
             ),
 
             //news articles
-            ListView.builder(
-              padding: EdgeInsets.only(top: 5),
-              itemCount: articles.length,
-                shrinkWrap: true,
-                  scrollDirection: Axis.vertical,
-                  itemBuilder: (context,index){
-                  return newsCard(
-                    imageUrl: articles[index].urlToImg,
-                    title: articles[index].title,
-                    desc: articles[index].description,
-                  );
-                }
-            )
+            Container(
+              color: Colors.white,
+              child: SingleChildScrollView(
+                  child: ListView.builder(
+                    padding: EdgeInsets.only(top: 5),
+                      itemCount: articles.length,
+                      shrinkWrap: true,
+                        physics: ClampingScrollPhysics(),
+                        scrollDirection: Axis.vertical,
+                        itemBuilder: (context,index){
+                        return newsCard(
+                          imageUrl: articles[index].urlToImg,
+                          title: articles[index].title,
+                          desc: articles[index].description,
+                          articleUrl: articles[index].articleUrl,
+                        );
+                      }
+                  ),
+              ),
+            ),
           ],
         ),
       ),
@@ -118,7 +129,13 @@ class CategoryCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: (){
-        //for later
+        // Navigator.push(
+        //     context, MaterialPageRoute(
+        //     builder: (context)=>ArticleView(
+        //       articleUrl: ,
+        //
+        //   ))
+        // );
       },
         child: Container(
           margin: const EdgeInsets.only(right: 7),
@@ -146,29 +163,42 @@ class CategoryCard extends StatelessWidget {
 }
 
 class newsCard extends StatelessWidget {
-  final String? imageUrl, title, desc;
-  const newsCard({super.key, required this.imageUrl,required this.title,required this.desc});
+  final String? imageUrl, title, desc, articleUrl;
+  const newsCard({super.key, required this.imageUrl,required this.title,required this.desc, required this.articleUrl});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.only(bottom: 15),
-      // decoration: BoxDecoration(
-      //   color: Colors.grey[300],
-      //   borderRadius: BorderRadius.circular(15),
-      // ),
-      child: Column(
-        children: <Widget>[
-          Image.network(imageUrl!),
-          Text(title!,
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              height: 1
+    return GestureDetector(
+      onTap: (){
+        Navigator.push(
+            context, MaterialPageRoute(
+              builder: (context)=>ArticleView(
+                articleUrl: articleUrl!,
+              )
             ),
-          ),
-          Text(desc!),
-        ],
+        );
+      },
+
+      child: Container(
+        margin: EdgeInsets.only(bottom: 15),
+        child: Column(
+          children: <Widget>[
+            ClipRRect(
+              borderRadius: BorderRadius.circular(7),
+                child: Image.network(imageUrl!)
+            ),
+            SizedBox(height: 5,),
+            Text(title!,
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                height: 1.2
+              ),
+            ),
+            SizedBox(height: 5,),
+            Text(desc!),
+          ],
+        ),
       ),
     );
   }
