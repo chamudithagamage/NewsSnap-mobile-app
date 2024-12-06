@@ -34,6 +34,8 @@ dependencies:
   cached_network_image: ^3.4.1
   webview_flutter: ^4.9.0
   flutter_dotenv: ^5.2.1
+  carousel_slider: ^5.0.0
+  smooth_page_indicator: ^1.2.0+3
 #  this is used to cached internet images in the cache directory. must import it
 
 

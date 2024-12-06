@@ -9,7 +9,7 @@ class ApiResponse {
 
   Future<void> getNews() async{
     final apiKey = ApiKey.apiKey;
-    String apiUrl = 'https://newsapi.org/v2/top-headlines?country=us&category=general&apiKey=$apiKey';
+    String apiUrl = 'https://newsapi.org/v2/everything?q=general&sortBy=popularity&apiKey=$apiKey';
 
     var response = await http.get(Uri.parse(apiUrl));
 
@@ -32,30 +32,26 @@ class ApiResponse {
           );
           news.add(articles);
         }
-
-      });
+      }
+      );
     }
+  }
 }
-
-}
-
 class SortByCategory {
-  List<Articles> news = [];
+  List<Articles> categoryNews = [];
+  final apiKey = ApiKey.apiKey;
 
-
-  Future<void> getNews(String category) async{
-    String apiUrl = 'https://newsapi.org/v2/top-headlines?country=us&category=$category&apiKey=7b18baf4d7174a108438c839b3ef336a';
+  Future<void> getCategoryNews(String category) async {
+    String apiUrl = 'https://newsapi.org/v2/top-headlines?category=${category.toLowerCase()}&apiKey=$apiKey';
 
     var response = await http.get(Uri.parse(apiUrl));
 
     //jsonData
     var responseJson = jsonDecode(response.body);
 
-    if(responseJson['status'] == "ok"){
-      responseJson["articles"].forEach((element){
-
-        if(element["urlToImage"] != null && element["description"] != null){
-
+    if (responseJson['status'] == "ok") {
+      responseJson["articles"].forEach((element) {
+        if (element["urlToImage"] != null && element["description"] != null) {
           Articles articles = Articles(
             title: element['title'],
             author: element['author'],
@@ -65,11 +61,9 @@ class SortByCategory {
             content: element['content'],
             //dateTime: element['publishedAt'],
           );
-          news.add(articles);
+          categoryNews.add(articles);
         }
-
       });
     }
   }
-
 }

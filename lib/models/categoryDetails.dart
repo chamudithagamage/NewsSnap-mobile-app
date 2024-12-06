@@ -1,4 +1,4 @@
 class CategoryDetails{
-   String categoryName = '';
+   String? categoryName;
 
 }
