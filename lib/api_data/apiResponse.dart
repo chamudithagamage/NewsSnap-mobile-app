@@ -11,29 +11,30 @@ class ApiResponse {
     final apiKey = ApiKey.apiKey;
     String apiUrl = 'https://newsapi.org/v2/everything?q=general&sortBy=popularity&apiKey=$apiKey';
 
-    var response = await http.get(Uri.parse(apiUrl));
+    try{
+      var response = await http.get(Uri.parse(apiUrl));
+      //jsonData
+      var responseJson = jsonDecode(response.body);
 
-    //jsonData
-    var responseJson = jsonDecode(response.body);
-
-    if(responseJson['status'] == "ok"){
-      responseJson["articles"].forEach((element){
-
-        if(element["urlToImage"] != null && element["description"] != null){
-
-          Articles articles = Articles(
+      if(responseJson['status'] == "ok") {
+        responseJson["articles"].forEach((element) {
+          if (element["urlToImage"] != null && element["description"] != null) {
+            Articles articles = Articles(
               title: element['title'],
               author: element['author'],
               description: element['description'],
               articleUrl: element['url'],
               urlToImg: element['urlToImage'],
               content: element['content'],
-              //dateTime: element['publishedAt'],
-          );
-          news.add(articles);
+
+            );
+            news.add(articles);
+          }
         }
+        );
       }
-      );
+    }catch(e){
+      print("Error fetching news data");
     }
   }
 }
@@ -44,26 +45,29 @@ class SortByCategory {
   Future<void> getCategoryNews(String category) async {
     String apiUrl = 'https://newsapi.org/v2/top-headlines?category=${category.toLowerCase()}&apiKey=$apiKey';
 
-    var response = await http.get(Uri.parse(apiUrl));
+    try{
+        var response = await http.get(Uri.parse(apiUrl));
+        //jsonData
+        var responseJson = jsonDecode(response.body);
 
-    //jsonData
-    var responseJson = jsonDecode(response.body);
-
-    if (responseJson['status'] == "ok") {
-      responseJson["articles"].forEach((element) {
-        if (element["urlToImage"] != null && element["description"] != null) {
-          Articles articles = Articles(
-            title: element['title'],
-            author: element['author'],
-            description: element['description'],
-            articleUrl: element['url'],
-            urlToImg: element['urlToImage'],
-            content: element['content'],
-            //dateTime: element['publishedAt'],
-          );
-          categoryNews.add(articles);
+        if (responseJson['status'] == "ok") {
+          responseJson["articles"].forEach((element) {
+            if (element["urlToImage"] != null && element["description"] != null) {
+              Articles articles = Articles(
+                title: element['title'],
+                author: element['author'],
+                description: element['description'],
+                articleUrl: element['url'],
+                urlToImg: element['urlToImage'],
+                content: element['content'],
+                //dateTime: element['publishedAt'],
+              );
+              categoryNews.add(articles);
+            }
+          });
         }
-      });
+    }catch(e){
+      print("Error fetching category news");
     }
   }
 }

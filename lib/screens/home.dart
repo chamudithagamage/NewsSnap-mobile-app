@@ -1,16 +1,19 @@
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:news_app/api_data/carousel_data.dart';
 import 'package:news_app/api_data/data.dart';
 import 'package:news_app/models/categoryDetails.dart';
 import 'package:news_app/screens/article_view.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:smooth_page_indicator/smooth_page_indicator.dart';
-
 import '../api_data/apiResponse.dart';
+import '../bottom_navigation.dart';
 import '../models/articles.dart';
 import '../models/carousel_model.dart';
+import '../api_data/carousel_data.dart';
 import 'category_articles.dart';
+//import 'package:news_app/bottom_navigation.dart';
+import 'search_screen.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -21,28 +24,49 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
 
-  List<CategoryDetails> category = List.generate(7, (index) => CategoryDetails());
+  List<CategoryDetails> category = List.generate(
+      7, (index) => CategoryDetails());
   List<Articles> articles = List.generate(0, (index) => Articles());
-  List<CarouselModel> carouselSlider = [];
-  bool isLoading = true;
-  String image = "assets/image/playstore.png";
+  List<CarouselModel> carouselSlider = List.generate(0, (index) =>CarouselModel());
   int activeIndex = 0;
+  int activeIndex2 = 0;
+
+  final List<Widget> pages = [
+    Home(),
+    SearchScreen(),
+    //BookmarkArticles()
+  ];
+
+  bool isLoading = true;
+
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     category = getCategoryDetails();
-    carouselSlider = getCarouselModel();
+    // carouselSlider = fetchCarouselData();
     getApiResponse();
+    getCarousal();
   }
 
   //method to get api responses
-  getApiResponse() async{
+  getApiResponse() async {
     ApiResponse apiResponse = ApiResponse();
     await apiResponse.getNews();
     debugPrint('up to here works');
     articles = apiResponse.news;
+
+    //to check whether the response has received
+    setState(() {
+      isLoading = false;
+    });
+  }
+  getCarousal() async {
+    CarouselData carouselData = CarouselData();
+    await carouselData.getCarouselData();
+    debugPrint('up to here works');
+    carouselSlider = carouselData.carouselNews;
 
     //to check whether the response has received
     setState(() {
@@ -68,9 +92,9 @@ class _HomeState extends State<Home> {
                 fit: BoxFit.contain,
               ),
             ),
-             const Text(
+            const Text(
               "News|snap",
-                style: TextStyle(
+              style: TextStyle(
                 color: Colors.teal,
               ),
             ),
@@ -93,10 +117,10 @@ class _HomeState extends State<Home> {
               padding: const EdgeInsets.symmetric(vertical: 10),
               height: 60.0,
               child: ListView.builder(
-                itemCount: category.length,
+                  itemCount: category.length,
                   shrinkWrap: true,
                   scrollDirection: Axis.horizontal,
-                  itemBuilder: (context,index){
+                  itemBuilder: (context, index) {
                     return CategoryCard(
                       categoryName: category[index].categoryName!,
                     );
@@ -117,85 +141,124 @@ class _HomeState extends State<Home> {
                 ),
               ),
             ),
+            // carouselSlider.isEmpty? Center(child: Text("No data available"))
+            // :
             CarouselSlider.builder(
-                itemCount: carouselSlider.length, itemBuilder: (context,index, realIndex){
-                    String? res = carouselSlider[index].sliderImageUrl;
-                    String? res1 = carouselSlider[index].sliderHeading;
-                    return carouselImage(res! , index, res1!);
-                }, options: CarouselOptions(
-                    height: 270,
-                    autoPlay: true,
-                    enlargeCenterPage: true,
-                    enlargeStrategy: CenterPageEnlargeStrategy.height,
-                  onPageChanged: (index,reason){
-                      setState(() {
-                        activeIndex = index;
-                      });
+              itemCount: carouselSlider.length,
+              itemBuilder: (context, index, realIndex) {
+                String? res = carouselSlider[index].sliderImageUrl;
+                String? res1 = carouselSlider[index].sliderHeading;
+                String? res2 = carouselSlider[index].sliderArticleUrl;
+                return carouselImage(res!, index, res1!, res2!);
+              },
+              options: CarouselOptions(
+                  height: 270,
+                  autoPlay: true,
+                  enlargeCenterPage: true,
+                  enlargeStrategy: CenterPageEnlargeStrategy.height,
+                  onPageChanged: (index, reason) {
+                    setState(() {
+                      activeIndex = index;
+                    });
                   }
-                ),
+              ),
             ),
 
 
             //news articles
             SizedBox(height: 10,),
 
-            Container(
-              //color: Colors.white,
-              child: SingleChildScrollView(
-                  child: ListView.builder(
-                    padding: EdgeInsets.only(top: 5),
-                      itemCount: articles.length,
-                      shrinkWrap: true,
-                        physics: ClampingScrollPhysics(),
-                        scrollDirection: Axis.vertical,
-                        itemBuilder: (context,index){
-                        return newsCard(
-                          imageUrl: articles[index].urlToImg,
-                          title: articles[index].title,
-                          desc: articles[index].description,
-                          articleUrl: articles[index].articleUrl,
-                        );
-                      }
-                  ),
+            SingleChildScrollView(
+              child: ListView.builder(
+                  padding: EdgeInsets.only(top: 5),
+                  itemCount: articles.length,
+                  shrinkWrap: true,
+                  physics: ClampingScrollPhysics(),
+                  scrollDirection: Axis.vertical,
+                  itemBuilder: (context, index) {
+                    return newsCard(
+                      imageUrl: articles[index].urlToImg,
+                      title: articles[index].title,
+                      desc: articles[index].description,
+                      articleUrl: articles[index].articleUrl,
+                    );
+                  }
               ),
             ),
+            //pages[activeIndex2],
           ],
         ),
       ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: activeIndex2,
+        onTap: (index){
+          setState(() {
+            activeIndex2 = index;
+          });
+        },
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.search),
+            label: 'Search',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.bookmark),
+            label: 'Bookmarks',
+          ),
+        ],
+        selectedItemColor: Colors.teal,
+        unselectedItemColor: Colors.black38,
+      ),
     );
   }
-  Widget carouselImage(String imageUrl, int index, String title)=>Container(
-    margin: EdgeInsets.symmetric(horizontal: 5),
-    // color: Colors.grey,
-    child: Stack(
-      children: <Widget>[
-         ClipRRect(
-          borderRadius: BorderRadius.circular(20),
-           child: Image.asset(
-            imageUrl,
-            height: 270,
-            fit: BoxFit.cover,
-            width: MediaQuery.of(context).size.width,
+
+  Widget carouselImage(String imageUrl, int index, String title, String articleUrl) =>
+      Container(
+          margin: EdgeInsets.symmetric(horizontal: 5),
+          // color: Colors.grey,
+          child: Stack(
+            children: <Widget>[
+              ClipRRect(
+                borderRadius: BorderRadius.circular(20),
+                child: CachedNetworkImage(
+                  imageUrl: carouselSlider[index].sliderImageUrl.toString(),
+                  height: 270,
+                  fit: BoxFit.cover,
+                  width: MediaQuery
+                      .of(context)
+                      .size
+                      .width,
+                ),
+              ),
+              Container(
+                height: 250,
+                padding: EdgeInsets.only(left: 10),
+                margin: EdgeInsets.only(top: 150.0),
+                width: MediaQuery
+                    .of(context)
+                    .size
+                    .width,
+                decoration: BoxDecoration(
+                    color: Colors.black26,
+                    borderRadius: BorderRadius.circular(20)),
+                child: Text(
+                  title,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    height: 1.2,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              )
+            ],
           ),
-        ),
-        Container(
-          height: 250,
-          padding: EdgeInsets.only(left: 10),
-          margin: EdgeInsets.only(top: 150.0),
-          width: MediaQuery.of(context).size.width,
-          decoration: BoxDecoration(color: Colors.black26,borderRadius: BorderRadius.circular(20)),
-          child: Text(
-            title,
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 18,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        )
-      ],
-    ),
-  );
+        );
+  pages[activeIndex2]
 }
 
 
@@ -219,7 +282,7 @@ class CategoryCard extends StatelessWidget {
         child: Container(
           margin: const EdgeInsets.only(right: 7),
           decoration: BoxDecoration(
-            //color: Colors.grey[300],
+            color: Colors.grey[300],
             borderRadius: BorderRadius.circular(15),
           ),
           child: Stack(

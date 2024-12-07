@@ -1,0 +1,11 @@
+flutter_splash_screen:
+  android: true
+  ios: true
+  web: false
+
+  color: "#B2D8D8"
+  image: "assets/images/placeolder.jpg"
+
+  android_12:
+    color: "#B2D8D8"
+    image: "assets/images/placeolder.jpg"

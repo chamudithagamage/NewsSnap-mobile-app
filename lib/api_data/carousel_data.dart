@@ -1,30 +1,46 @@
 import 'dart:convert';
-import 'package:http/http.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:news_app/models/carousel_model.dart';
+import '../api_key.dart';
+import 'package:http/http.dart' as http;
+
+class CarouselData{
+  List<CarouselModel> carouselNews = [];
+  String? articleUrl;
+  CarouselData({this.articleUrl});
 
 
-List<CarouselModel> getCarouselModel() {
+  Future<void> getCarouselData() async{
+    final apiKey = ApiKey.apiKey;
+    String apiUrl = 'https://newsapi.org/v2/top-headlines?category=general&apiKey=$apiKey';
 
-  //const String apiUrl = ''
-  List<CarouselModel> carousel = List.generate(0, (index) => CarouselModel());
-  CarouselModel carouselModel = CarouselModel();
+    try {
+      var response = await http.get(Uri.parse(apiUrl));
+      //jsonData
+      var responseJson = jsonDecode(response.body);
 
-  //giving news categories
-  carouselModel = CarouselModel();
-  carouselModel.sliderHeading = "Business";
-  carouselModel.sliderImageUrl = "assets/images/playstore.png";
-  carousel.add(carouselModel);
+      if (responseJson['status'] == "ok" && responseJson['articles'] != null) {
+        responseJson["articles"].forEach((element) {
+          if (["urlToImage"] != null && element["description"] != null && element["title"] != null && element["url"] != null) {
 
-  carouselModel = CarouselModel();
-  carouselModel.sliderHeading = "Entertainment";
-  carouselModel.sliderImageUrl = "assets/images/playstore.png";
-  carousel.add(carouselModel);
+            CarouselModel carouselModel = CarouselModel(
+              sliderHeading: element['title'] ?? 'No title available',
+              sliderAuthor: element['author']?? 'Unknown author',
+              sliderDescription: element['description']?? '',
+              sliderArticleUrl: element['url']?? '',
+              sliderImageUrl: element['urlToImage']?? '',
+              sliderContent: element['content']?? '',
 
-  carouselModel = CarouselModel();
-  carouselModel.sliderHeading = "Health";
-  carouselModel.sliderImageUrl = "assets/images/playstore.png";
-  carousel.add(carouselModel);
-
-
-  return carousel;
+            );
+            carouselNews.add(carouselModel);
+          }else{
+            print('Article image and description is not available');
+          }
+        }
+        );
+      }
+    }catch (e){
+      debugPrint("Error fetching carousel data $e");
+    }
+  }
 }

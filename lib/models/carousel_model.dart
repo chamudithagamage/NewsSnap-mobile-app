@@ -2,13 +2,19 @@ class CarouselModel{
 
   String? sliderHeading;
   String? sliderImageUrl;
+  String? sliderAuthor;
+  String? sliderDescription;
+  String? sliderContent;
+  String? sliderArticleUrl;
 
-  CarouselModel({this.sliderHeading, this.sliderImageUrl});
 
-  factory CarouselModel.fromJson(Map<String, dynamic> json) {
-    return CarouselModel(
-      sliderHeading: json['title'],
-      sliderImageUrl: json['urlToImage'],
-    );
-  }
+  CarouselModel({
+    this.sliderHeading,
+    this.sliderImageUrl,
+    this.sliderArticleUrl,
+    this.sliderAuthor,
+    this.sliderContent,
+    this.sliderDescription
+  });
+
 }
